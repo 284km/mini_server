@@ -1,3 +1,36 @@
 #!/usr/bin/env ruby
 
+$LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
 require "mini_server"
+require "optparse"
+
+options = {}
+
+option_parser = OptionParser.new do |opts|
+  executable_name = File.basename($PROGRAM_NAME)
+  opts.banner = "Welcome to tiny httpd!
+
+Usage: #{executable_name} -h {host} -p {port}"
+
+  opts.on('-h host',
+          'specify host ip for tiny httpd server') do |name|
+    options['host'] = name
+  end
+
+  opts.on('-p port',
+          'specify port number for tiny httpd server') do |name|
+    options['port'] = name
+  end
+end
+
+option_parser.parse!
+
+unless ARGV.empty?
+  puts 'ERROR: wrong command usage!'
+  puts
+  puts option_parser.help
+end
+
+# Server.new(options['host'], options['port'].to_i).run
+MiniServer::Server.call(options['host'], options['port'].to_i)
+
